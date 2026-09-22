@@ -1,6 +1,11 @@
 # Obsidian Multi-Device Sync via GitHub
 
-A free, self-hosted alternative to Obsidian Sync. Works across one or more laptops and an Android phone, with full version history and zero monthly cost.
+**A step-by-step guide to syncing one Obsidian vault across laptops and an Android phone through a private GitHub repository: SSH-authenticated git everywhere, the Obsidian Git plugin committing and pulling every 5 minutes on laptops, and a Termux script behind a one-tap home-screen widget on Android.**
+
+> [!NOTE]
+> **Status: complete, verified end-to-end on Windows and Android** — see [Verified on](#verified-on). How it was written: [AI disclosure](#ai-disclosure).
+
+A free alternative to Obsidian Sync. Works across one or more laptops and an Android phone, with full version history and zero monthly cost. It is not real-time sync: laptops sync every 5 minutes and Android when you tap the widget, so the same note edited on two devices between syncs can conflict — [Phase 6](#phase-6--troubleshooting) covers the fixes.
 
 This guide is the result of building this setup, breaking it, and rebuilding it correctly. Every step here is verified end-to-end on Windows + Android. The mistakes are documented so you don't have to repeat them.
 
@@ -23,7 +28,7 @@ By the end of this guide you will have:
 
 ## Architecture
 
-```
+```text
    Primary Laptop          Other Laptop(s)             Android
    ┌────────────┐          ┌────────────┐          ┌────────────┐
    │  Obsidian  │          │  Obsidian  │          │  Obsidian  │
@@ -89,13 +94,13 @@ winget install --id Git.Git -e --source winget
 ```
 
 **Verify Git on any platform:**
-```
+```bash
 git --version
 ```
 
 ---
 
-# Phase 1 — Create the GitHub Repository
+## Phase 1 — Create the GitHub Repository
 
 This is your central backend. All devices will push to and pull from this repo.
 
@@ -108,7 +113,7 @@ This is your central backend. All devices will push to and pull from this repo.
 
 ---
 
-# Phase 2 — Primary Laptop (Where the Vault Originates)
+## Phase 2 — Primary Laptop (Where the Vault Originates)
 
 This is your starting point. The `.gitignore` and initial commit are created here, and any other devices you add later will clone from this state. **You only do Phase 2 once**, on the laptop where your vault lives (or where you want it to live).
 
@@ -255,7 +260,7 @@ Test the plugin: press `Ctrl+P` → type `git commit` → run **Git: Commit-and-
 
 ---
 
-# Phase 3 — Additional Laptops (Optional)
+## Phase 3 — Additional Laptops (Optional)
 
 Skip this phase if you only have one laptop. If you have a second Windows machine, a Mac, or a Linux laptop you also want synced, follow these steps **for each one**. The steps are the same regardless of how many additional laptops you're adding.
 
@@ -306,7 +311,7 @@ That's it. This laptop is now syncing. Repeat Phase 3 for each additional laptop
 
 ---
 
-# Phase 4 — Android (with FUSE Corruption Fix)
+## Phase 4 — Android (with FUSE Corruption Fix)
 
 Android sync uses Termux + a one-tap widget instead of the Obsidian Git plugin. The plugin's mobile implementation is unreliable on Android.
 
@@ -450,7 +455,7 @@ That's the entire Android workflow.
 
 ---
 
-# Phase 5 — Daily Workflow
+## Phase 5 — Daily Workflow
 
 | Action | Laptop(s) | Android |
 |--------|-----------|---------|
@@ -463,7 +468,7 @@ That's the entire Android workflow.
 
 ---
 
-# Phase 6 — Troubleshooting
+## Phase 6 — Troubleshooting
 
 ### Error: `Permission denied (publickey)`
 
@@ -551,7 +556,7 @@ Android's shared storage uses FUSE (Filesystem in Userspace), a virtual file lay
 
 ## Appendix B — Recommended `.gitignore` (Copy-Paste)
 
-```
+```gitignore
 # Obsidian device-specific files
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
@@ -580,7 +585,7 @@ Thumbs.db
 
 ## Appendix C — Recommended `.gitattributes`
 
-```
+```gitattributes
 * text=auto eol=lf
 *.md text eol=lf
 ```
@@ -607,6 +612,12 @@ Make executable:
 ```bash
 chmod +x ~/.shortcuts/sync.sh
 ```
+
+---
+
+## AI disclosure
+
+I built, tested and wrote this guide without AI assistance. In September 2026 it was restructured with an AI assistant to match my documentation standard (heading levels, code-block languages, a status note and this section); the steps, commands and fixes are unchanged.
 
 ---
 
